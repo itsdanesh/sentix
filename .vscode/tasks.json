@@ -1,0 +1,56 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start Vite development server",
+			"command": "yarn",
+			"args": [
+				"dev:react"
+			],
+			"icon": {
+				"color": "terminal.ansiGreen",
+				"id": "debug"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/apps/admin"
+			}
+		},
+		{
+			"label": "Start TailwindCSS watch server",
+			"command": "yarn",
+			"args": [
+				"dev:css"
+			],
+			"icon": {
+				"color": "terminal.ansiGreen",
+				"id": "symbol-color"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/apps/admin"
+			}
+		},
+		{
+			"label": "Start development servers",
+			"dependsOn": [
+				"Start Vite development server",
+				"Start TailwindCSS watch server"
+			],
+			"icon": {
+				"color": "terminal.ansiGreen",
+				"id": "debug-all"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Build frontend",
+			"command": "yarn",
+			"args": [
+				"build"
+			],
+			"icon": {
+				"color": "terminal.ansiYellow",
+				"id": "tools"
+			}
+		}
+	]
+}
