@@ -1,3 +1,58 @@
+# Backend
+
+The Sentix backend exposes a simple API for administrating a ML model and its data set, in particular it allows for:
+
+- Getting a sentiment prediction from the model
+- Adding and removing data points to the data set
+- Triggering a re-training of the model
+
+## Setup guide (with Anaconda)
+
+This guide assumes you already have:
+
+- `python3`
+- `pip`
+- `Anaconda`
+
+1. Setup your virtual environment  
+1.1 If you do not have a virtual environment, create one by running  
+```conda create --name $ENV_NAME```, where `$ENV_NAME` is an unused environment name 
+
+1.2 If you already have a virtual environment, activate it by running  
+
+```bash
+# Unix
+source activate $ENV_NAME
+
+# Windows
+activate $ENV_NAME
+```
+
+1.3 Install necessary dependencies 
+
+2. Once your environment is set up, run the following command:
+
+```bash
+python manage.py runserver
+```
+
+
+## Step 03
+
+Run the following command in the terminal where you activated your virtual environment to start the server
+- python manage.py runserver
+
+## Step 04 
+
+Visit http://127.0.0.1:8000/api/ping/ in your web browser and you should see the JSON response {"message": "pong"}.
+
+## Step 05 (Optional)
+
+- Deactivate the virtual environment 
+  - $ source deactivate (Linux or MacOS)
+  - $ deactivate (Windows)
+
+
 **The ML model**
 
 In the provided machine learning model for Sentix, we use two different algorithms: Naive Bayes (NB) and Logistic Regression (LR), and we evaluate their performance using confusion matrix. Here's a simple breakdown of how each part works:

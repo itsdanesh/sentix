@@ -1,5 +1,12 @@
 {
   "cSpell.words": [
-    "Sentix"
+    "joblib",
+    "Lemmatization",
+    "lemmatize",
+    "lemmatizer",
+    "Sentix",
+    "stopwords",
+    "vectorizer",
+    "Vectorizing"
   ]
 }

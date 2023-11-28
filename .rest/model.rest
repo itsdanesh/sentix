@@ -1,0 +1,16 @@
+
+@HOST_NAME = http://localhost:8000
+@PREDICTION_PATH = calc
+
+### Get negative prediction
+POST {{HOST_NAME}}/{{PREDICTION_PATH}}/
+Content-Type: application/json
+
+"Life is misery. It is truly a marvel how one hasn't ended it all."
+
+### Get positive prediction
+POST {{HOST_NAME}}/{{PREDICTION_PATH}}/
+Content-Type: application/json
+
+"What a beautiful day to code in python. This is definitely not sarcasm and I love this language so much"
+

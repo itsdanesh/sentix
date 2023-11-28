@@ -1,0 +1,4 @@
+apps/backend/__pycache__/
+sentix/__pycache__/
+db.sqlite3
+apps/backend/migrations/__pycache__/
