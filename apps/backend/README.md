@@ -73,5 +73,33 @@ How it works: A confusion matrix is a table used to evaluate the performance of 
 Function used: We use confusion_matrix from scikit-learn to create the matrix. It's used like this: cm = confusion_matrix(y_val, predictions), where y_val is the actual sentiments and predictions are what the model predicted. This is done for both the Naive Bayes and Logistic Regression models.
 
 **Save the model:**
+Then the model is saved using joblib library.
 
+**Running Server.py**:
+
+ 
+- Activate your Anaconda environment:
+``` 
+conda activate your_env_name 
+```
+
+
+- Install Required Libraries:
+```
+conda install pandas scikit-learn matplotlib seaborn 
+```
+Note: you might need to install additional libraries.
+
+
+- Navigate to the Script's Directory:
+```
+cd path/to/your/script
+```
+- Run the Script:
+
+```
+python Server.py
+```
+=======
 Then the model is saved using joblib library
+>>>>>>> apps/backend/README.md
