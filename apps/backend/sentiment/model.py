@@ -4,10 +4,7 @@ import pandas as pd
 import re
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.linear_model import LogisticRegression
 from pathlib import Path
 
@@ -17,30 +14,23 @@ PATH_TO_DB = Path("db.sqlite3")
 
 def train_model():
     db_conn = sqlite3.connect(PATH_TO_DB)
-    # db_conn = sqlite3.connect(PATH_TO_DB)
     train_df = pd.read_sql_query("SELECT * FROM twitter_training", db_conn)
 
     def preprocess_text(text):
         if not isinstance(text, str):
             return ""
-
         # Convert text to lowercase
         text = text.lower()
-
         # Remove punctuation
         text = re.sub(r"[^\w\s]", "", text)
-
         # Remove numbers
         text = re.sub(r"\d+", "", text)
-
         # Remove stopwords
         stop_words = set(stopwords.words("english"))
         text = " ".join(word for word in text.split() if word not in stop_words)
-
         # Lemmatization
         lemmatizer = WordNetLemmatizer()
         text = " ".join(lemmatizer.lemmatize(word) for word in text.split())
-
         return text
 
     print("Preprocessing data set")
@@ -65,10 +55,8 @@ def preprocess_and_predict(text):
     try:
         models = joblib.load(PATH_TO_MODEL)
     except FileNotFoundError:
-        train_model()
-
-        return preprocess_and_predict(text)
-
+         return "Error: Model not found"
+    
     vectorizer = models["vectorizer"]
     log_reg_model = models["logistic_regression"]
 
