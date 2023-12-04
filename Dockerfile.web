@@ -1,0 +1,15 @@
+FROM node:18.16.0
+
+# Set up working directory
+WORKDIR /app
+COPY . .
+
+# Build Admin dashboard
+RUN cd ./apps/admin && npm install && npm run build
+RUN cd ./apps/web && npm install && npm run build
+
+# Expose port 5000 for the Express server
+EXPOSE 5000
+
+WORKDIR /app/apps/web
+CMD ["node", "./dist/index.js"]

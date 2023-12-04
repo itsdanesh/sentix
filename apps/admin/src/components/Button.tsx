@@ -1,9 +1,5 @@
 import { cn } from "@/utils/cn";
-import React, {
-	DetailedHTMLProps,
-	ButtonHTMLAttributes,
-	forwardRef,
-} from "react";
+import { DetailedHTMLProps, ButtonHTMLAttributes, forwardRef } from "react";
 
 export type ButtonProps = DetailedHTMLProps<
 	ButtonHTMLAttributes<HTMLButtonElement>,

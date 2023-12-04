@@ -50,7 +50,42 @@
 			"icon": {
 				"color": "terminal.ansiYellow",
 				"id": "tools"
-			}
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/apps/admin"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Start API",
+			"command": "python",
+			"args": [
+				"manage.py",
+				"runserver"
+			],
+			"icon": {
+				"color": "terminal.ansiGreen",
+				"id": "server"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/apps"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Start Web Server",
+			"command": "yarn",
+			"args": [
+				"start"
+			],
+			"icon": {
+				"color": "terminal.ansiGreen",
+				"id": "server"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/apps/web"
+			},
+			"problemMatcher": []
 		}
 	]
 }

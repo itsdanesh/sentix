@@ -11,8 +11,7 @@ export default defineConfig({
 		},
 	},
 	build: {
-		// TODO in the future, change this to django's public directory
-		outDir: "./dist",
+		outDir: path.join(process.cwd(), "..", "web", "static"),
 	},
 	server: {
 		port: 3000,
