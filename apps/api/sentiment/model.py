@@ -7,13 +7,12 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 from pathlib import Path
+from ..db import get_db_connection
 
 PATH_TO_MODEL = Path("trained_model")
-PATH_TO_DB = Path("db.sqlite3")
-
 
 def train_model():
-    db_conn = sqlite3.connect(PATH_TO_DB)
+    db_conn = get_db_connection()
     train_df = pd.read_sql_query("SELECT * FROM twitter_sentiment", db_conn)
 
     def preprocess_text(text):
