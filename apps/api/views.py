@@ -3,9 +3,10 @@ from django.views.decorators.http import require_http_methods
 import json
 import threading
 from .sentiment.model import preprocess_and_predict, train_model as train_model_logic
+from .db import get_db_connection
+import pandas as pd
 
 model_status = "good"
-
 
 @require_http_methods(["GET"])
 def get_model_status(request):
@@ -39,6 +40,47 @@ def get_sentiment(request):
 
     return JsonResponse({"sentiment": sentiment})
 
+@require_http_methods(["POST", "DELETE", "GET"])
+def manipulate_data(request):
+    if(request.method == "POST"):
+        body = json.loads(request.body)
+
+        text = body.get("text")
+        if(text is None):
+            return JsonResponse({ "error": "Expected property 'text' in request body."})
+        
+        sentiment = body.get("sentiment")
+        if not sentiment in ["Neutral", "Positive", "Negative", "Irrelevant"]:
+            return JsonResponse({ "error": "Expected property 'sentiment' in request body to be one of 'Neutral', 'Positive', 'Negative', or 'Irrelevant'"})
+
+        data = { "text": text, "sentiment": sentiment }
+        df = pd.DataFrame(data)
+        print(df)
+        conn = get_db_connection()
+        df.to_sql("twitter_sentiment", conn, index=True)
+        # pd.read_sql_query(f'''INSERT INTO twitter_sentiment(id, name, sentiment, text) VALUES (1337, "Fortnite", "{sentiment}", "{text}")''', conn)
+
+        return JsonResponse(data)
+
+    if(request.method == "DELETE"):
+        pass
+
+    if(request.method == "GET"):
+        matcher = request.GET.get("text")
+        if(matcher is None):
+            return JsonResponse({ "error": "Expected query parameter 'text' for matching data." }, status=400)
+
+        
+        conn = get_db_connection()
+        
+        train_df = pd.read_sql_query(f"SELECT * FROM twitter_sentiment WHERE text LIKE '%{matcher}%'", conn)
+        data = train_df.to_dict(orient="records")
+        print(data)
+        return JsonResponse(data)
+        print(train_df)
+        pass
+
+    return JsonResponse({ "test": "ok"})
 
 def thread_safe_train_model():
     global model_status
