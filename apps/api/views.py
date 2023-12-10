@@ -2,7 +2,7 @@ from django.http.response import JsonResponse
 from django.views.decorators.http import require_http_methods
 import json
 import threading
-from .sentiment.model import preprocess_and_predict, train_model as train_model_logic
+from .sentiment.model import preprocess_and_predict, train_model as train_model_logic,test_model
 from .db import get_db_connection
 import pandas as pd
 
@@ -91,3 +91,15 @@ def thread_safe_train_model():
     except Exception as e:
         model_status = "stale"
         print(f"Error during training: {e}")
+
+@require_http_methods(["GET"])
+def get_accuracy_score(request):
+    # Call the test_model function
+    accuracy = test_model()
+
+    # Check if the function returned an error message (in case the model wasn't found)
+    if isinstance(accuracy, str):
+        return JsonResponse({'error': accuracy}, status=500)
+
+    # Return the accuracy in the response
+    return JsonResponse({'accuracy score': accuracy})
