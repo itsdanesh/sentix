@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Colorful Twitter",
+    "name": "Sentix",
     "version": "1.0",
-    "description": "Color-tag Tweets",
+    "description": "Color-tag tweets according to the ML sentiment analysis.",
     "icons": {
         "16": "images/icon-16.png",
         "32": "images/icon-32.png",

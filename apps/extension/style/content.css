@@ -1,9 +1,13 @@
 body {
     --SentixPositive: #77B91E;
     --SentixNegative: #E03131;
+    --SentixNeutral: #777777;
+    --SentixIrrelevant: #AE27FF;
 }
 
 .assigned-label-negative, a.assigned-label-negative { color: var(--SentixNegative) !important; }
 .assigned-label-positive, a.assigned-label-positive { color: var(--SentixPositive) !important; }
+.assigned-label-neutral, a.assigned-label-neutral { color: var(--SentixNeutral) !important; }
+.assigned-label-irrelevant, a.assigned-label-irrelevant { color: var(--SentixIrrelevant) !important; }
 
 .has-assigned-label * { color: inherit !important; }
