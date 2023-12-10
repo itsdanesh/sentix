@@ -1,11 +1,11 @@
 from django.urls import path
-from .views import get_model_status, train, get_sentiment, manipulate_data
-from django.conf.urls.static import static
-from django.conf import settings
+from . import views
 
 urlpatterns = [
-    path("status", get_model_status, name="get_model_status"),
-    path("train", train, name="train_model"),
-    path("calc", get_sentiment, name="get_sentiment"),
-    path("data", manipulate_data, name="manipulate_data")
+    path("status", views.get_model_status, name="get_model_status"),
+    path("train", views.train, name="train_model"),
+    path("calc", views.get_sentiment, name="get_sentiment"),
+    path("data", views.manipulate_data, name="manipulate_data"),
+    path('accuracy', views.get_accuracy_score, name='get_accuracy_score'),
+    
 ]
