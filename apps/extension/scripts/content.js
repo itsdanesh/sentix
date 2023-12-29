@@ -62,6 +62,39 @@ async function updateTwitterClasses() {
                         break
                 }
 
+                let button = document.createElement('button');
+                button.textContent = 'Report';
+
+                button.style.setProperty('background-color', 'red', 'important');
+                button.style.setProperty('color', 'white', 'important');
+                button.style.setProperty('margin-left', '10px', 'important');
+
+                button.addEventListener('click', async function () {
+                    // console.log(tweetText);
+                    try {
+                        let response = await fetch('http://localhost:8000/report', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                "text": tweetText,
+                                "sentiment": sentiment
+                            }),
+                        })
+
+                        if (response.ok) {
+                            console.log("Report sent");
+                        } else {
+                            console.error('API request failed:', response.statusText)
+                        }
+                    } catch (error) {
+                        console.error('Error making API request:', error.message)
+                    }
+                });
+
+                el.appendChild(button);
+
                 el.classList.add('has-assigned-label')
             }
         }
