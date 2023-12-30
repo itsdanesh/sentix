@@ -1,4 +1,5 @@
 import { ModelStatus, api } from "@/api";
+import HtmlRenderer from './LimeExplainer'; // Adjust the path as needed
 import { Button } from "@/components/Button";
 import { Header, headerHeight } from "@/components/Header";
 import { TextArea } from "@/components/TextArea";
@@ -59,9 +60,8 @@ export const DashboardPage: React.FC = () => {
 		[
 			{
 				title: "Status",
-				description: `The status of the model is displayed here. It is polled once every ${
-					POLL_INTERVAL / 1000
-				} seconds. The model can be either up to date, stale (missing data), or training.`,
+				description: `The status of the model is displayed here. It is polled once every ${POLL_INTERVAL / 1000
+					} seconds. The model can be either up to date, stale (missing data), or training.`,
 				Content: (
 					<span
 						className={cn(
@@ -71,6 +71,7 @@ export const DashboardPage: React.FC = () => {
 					>
 						{isStatusSuccess ? StatusDisplay[status] : "Pinging model..."}
 					</span>
+
 				),
 			},
 			{
@@ -120,13 +121,15 @@ export const DashboardPage: React.FC = () => {
 			>
 				<div
 					className={cn(
-						"flex flex-col overflow-hidden w-2/5",
+						"flex flex-col overflow-hidden",
 						"bg-slate-900/80 border border-slate-500/50 rounded-lg h-full",
 					)}
+					style={{ width: '80%' }} // Set the width to 80%
 				>
 					<h1 className="text-lg font-medium px-4 py-3 border-b border-b-slate-500/50 bg-slate-900">
-						ML Management: Backend model administration
+						ML Management: LIME
 					</h1>
+					<HtmlRenderer />
 				</div>
 				<div
 					className={cn(

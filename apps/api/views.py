@@ -1,10 +1,16 @@
 from django.http.response import JsonResponse
 from django.views.decorators.http import require_http_methods
+from lime.lime_text import LimeTextExplainer
+from django.http import HttpResponse
+import joblib
 import json
+from pathlib import Path
 import threading
-from .sentiment.model import preprocess_and_predict, train_model as train_model_logic,test_model
+from .sentiment.model import preprocess_and_predict, train_model as train_model_logic,test_model, predict_proba
 from .db import get_db_connection
 import pandas as pd
+import traceback
+PATH_TO_MODEL = Path('sentiment' / 'trained_model')
 
 model_status = "good"
 
@@ -92,14 +98,35 @@ def thread_safe_train_model():
         model_status = "stale"
         print(f"Error during training: {e}")
 
+
 @require_http_methods(["GET"])
 def get_accuracy_score(request):
-    # Call the test_model function
     accuracy = test_model()
-
-    # Check if the function returned an error message (in case the model wasn't found)
     if isinstance(accuracy, str):
         return JsonResponse({'error': accuracy}, status=500)
-
-    # Return the accuracy in the response
     return JsonResponse({'accuracy score': accuracy})
+
+
+@require_http_methods(["POST"])
+def explain_text(request):
+    try:
+        models = joblib.load(PATH_TO_MODEL)
+        model = models["model"]
+        request_data = json.loads(request.body)
+        text_instance = request_data['text']
+
+        # classes are the sentiments
+        class_names = model.classes_.tolist()
+        explainer = LimeTextExplainer(class_names=class_names)
+
+        # Explanation with 5 feature(words)
+        exp = explainer.explain_instance(text_instance, predict_proba, num_features=5)
+
+        # Convert the explanation to HTML
+        explanation_html = exp.as_html()
+
+        return HttpResponse(explanation_html, content_type="text/html")
+
+    except Exception as e:
+        traceback.print_exc()
+        return HttpResponse('Error occurred: ' + str(e), status=500)
