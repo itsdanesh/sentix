@@ -46,9 +46,26 @@ def train_model():
     y = train_df['sentiment']
 
     print("Training final model on the entire dataset")
+<<<<<<< HEAD
+  # Logistic Regression with K-Fold Cross-Validation
+    kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    acc_scores = []
+    for train_index, val_index in kfold.split(X, y):
+        X_train, X_val = X[train_index], X[val_index]
+        y_train, y_val = y.iloc[train_index], y.iloc[val_index]
+
+    # Initialize LR model
+    # Tune hyperparameters (C)
+    final_model = LogisticRegression(max_iter=2000, C=3.0)  
+
+    # Train the model
+    final_model.fit(X_train, y_train)
+
+=======
     final_model = LogisticRegression(max_iter=1000, C=6.0)
     final_model.fit(X, y)
 
+>>>>>>> a764c28c979b814c4b7352d340e6b542dcb709c4
     models = {"model": final_model, "vectorizer": vectorizer}
     joblib.dump(models, PATH_TO_MODEL)
 
@@ -98,3 +115,23 @@ def test_model():
     # Calculate and return accuracy
     accuracy = accuracy_score(y_test, predictions_test)
     return accuracy
+<<<<<<< HEAD
+
+def predict_proba(texts):
+     # Load the model and vectorizer
+    try:
+        models = joblib.load(PATH_TO_MODEL)
+    except FileNotFoundError:
+        return "Error: Model not found"
+
+    vectorizer = models["vectorizer"]
+    model = models["model"]
+    processed_texts = [preprocess_text(text) for text in texts]
+    vectorized_texts = vectorizer.transform(processed_texts)
+
+    # Predict probabilities for each feature.
+    probabilities = model.predict_proba(vectorized_texts)
+    
+    return probabilities
+=======
+>>>>>>> a764c28c979b814c4b7352d340e6b542dcb709c4

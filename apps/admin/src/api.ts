@@ -21,4 +21,8 @@ export const api = {
 		const res = await httpClient.post("/calc", { text });
 		return res.data.sentiment;
 	},
+	explainText: async (text: string): Promise<string> => {
+		const response = await httpClient.post("/explain", { text });
+		return response.data;
+	  },
 };

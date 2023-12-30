@@ -7,5 +7,9 @@ urlpatterns = [
     path("calc", views.get_sentiment, name="get_sentiment"),
     path("data", views.manipulate_data, name="manipulate_data"),
     path('accuracy', views.get_accuracy_score, name='get_accuracy_score'),
+<<<<<<< HEAD
+      path("explain", views.explain_text, name="explain_text"),
+=======
+>>>>>>> a764c28c979b814c4b7352d340e6b542dcb709c4
     
 ]
