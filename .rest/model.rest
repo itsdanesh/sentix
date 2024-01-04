@@ -4,13 +4,15 @@
 @STATUS_PATH = status
 @TRAIN_PATH = train
 @DATA_PATH = data
+@REVERT_PATH = revert
+@ACCURACY_ENDPOINT = accuracy
 
 ### Get irrelevant prediction
 POST {{HOST_NAME}}/{{PREDICTION_PATH}}
 Content-Type: application/json
 
 {
-  "text": "Life is misery. It is truly a marvel how one hasn't ended it all."
+  "text": "Life is life."
 }
 
 ### Get negative prediction
@@ -44,17 +46,8 @@ GET {{HOST_NAME}}/{{STATUS_PATH}}
 ### Trigger a re-render of the model
 POST {{HOST_NAME}}/{{TRAIN_PATH}}
 
-### Get data points that include the selected text
-GET {{HOST_NAME}}/{{DATA_PATH}}?text=kill
+### Switch the models
+GET {{HOST_NAME}}/{{REVERT_PATH}}
 
-### Add data point
-POST {{HOST_NAME}}/{{DATA_PATH}}
-Content-Type: application/json
-
-{
-  "text": "Life is good",
-  "sentiment": "Positive"
-}
-
-### Delete data point with a specific ID
-DELETE {{HOST_NAME}}/{{DATA_PATH}}?id=5
+### Get the accuracy of models
+GET {{HOST_NAME}}/{{ACCURACY_ENDPOINT}}
