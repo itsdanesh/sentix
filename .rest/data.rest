@@ -1,0 +1,59 @@
+
+@HOST_NAME = http://localhost:8000
+@PREDICTION_PATH = calc
+@STATUS_PATH = status
+@TRAIN_PATH = train
+@DATA_PATH = data
+@REPORT_PATH = report
+
+### Submit a user report (done through extension)
+POST {{HOST_NAME}}/{{REPORT_PATH}}
+Content-Type: application/json
+
+{
+  "text": "Cancers are cancerous",
+  "sentiment": "Negative"
+}
+
+### Get complete list of user reports
+GET {{HOST_NAME}}/{{REPORT_PATH}}
+
+### Accept a User Report
+PUT {{HOST_NAME}}/{{REPORT_PATH}}
+Content-Type: application/json
+
+{
+  "text": "Life is misery",
+  "accept": true,
+  "sentiment": "Neutral"  
+}
+
+### Deny a User Report
+PUT {{HOST_NAME}}/{{REPORT_PATH}}
+Content-Type: application/json
+
+{
+  "text": "Life is miseryy",
+  "accept": false  
+}
+
+### Get data points that include the selected text
+GET {{HOST_NAME}}/{{DATA_PATH}}?text=Fortnite
+
+### Add data point
+POST {{HOST_NAME}}/{{DATA_PATH}}
+Content-Type: application/json
+
+{
+  "text": "Life is good",
+  "sentiment": "Positive"
+}
+
+### Delete a data point
+DELETE {{HOST_NAME}}/{{DATA_PATH}}
+Content-Type: application/json
+
+{
+  "text": "@ITalkFortnite Just bought Borderlands 3 from @EpicGames using your creator code! Can\u2019t wait to use the skin!",
+  "sentiment": "Positive"
+}

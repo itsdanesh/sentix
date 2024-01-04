@@ -1,5 +1,4 @@
 import joblib
-import sqlite3
 from sklearn.model_selection import StratifiedKFold
 import pandas as pd
 import re
@@ -10,33 +9,29 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 from pathlib import Path
 from ..db import get_db_connection
+import os
 
+PATH_TO_MODEL = Path("model")
+PATH_TO_OLD_MODEL = Path("model_old")
 
-
-PATH_TO_MODEL = Path("trained_model")
+# Pre-processes the text so that it can be used in the Machine Learning pipeline.
+# This is done by lowercasing the text, removing punctuation and numbers, stopwords, and finally lemmatizing the text.
 def preprocess_text(text):
-        if not isinstance(text, str):
-            return ""
-        # Convert text to lowercase
-        text = text.lower()
-        # Remove punctuation
-        text = re.sub(r"[^\w\s]", "", text)
-        # Remove numbers
-        text = re.sub(r"\d+", "", text)
-        # Remove stopwords
-        stop_words = set(stopwords.words("english"))
-        text = " ".join(word for word in text.split() if word not in stop_words)
-        # Lemmatization
-        lemmatizer = WordNetLemmatizer()
-        text = " ".join(lemmatizer.lemmatize(word) for word in text.split())
-        return text
-
+    if not isinstance(text, str):
+        return ""
+    text = text.lower()
+    text = re.sub(r"[^\w\s]", "", text)
+    text = re.sub(r"\d+", "", text)
+    stop_words = set(stopwords.words("english"))
+    text = " ".join(word for word in text.split() if word not in stop_words)
+    lemmatizer = WordNetLemmatizer()
+    text = " ".join(lemmatizer.lemmatize(word) for word in text.split())
+    return text
 
 def train_model():
     db_conn = get_db_connection()
-    train_df = pd.read_sql_query("SELECT * FROM twitter_sentiment", db_conn)
+    train_df = pd.read_sql_query("SELECT * FROM api_sentimententry", db_conn)
     
-
     print("Preprocessing data set")
     train_df["ProcessedTweet"] = train_df["text"].apply(preprocess_text)
 
@@ -46,8 +41,7 @@ def train_model():
     y = train_df['sentiment']
 
     print("Training final model on the entire dataset")
-<<<<<<< HEAD
-  # Logistic Regression with K-Fold Cross-Validation
+    # Logistic Regression with K-Fold Cross-Validation
     kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     acc_scores = []
     for train_index, val_index in kfold.split(X, y):
@@ -61,14 +55,18 @@ def train_model():
     # Train the model
     final_model.fit(X_train, y_train)
 
-=======
     final_model = LogisticRegression(max_iter=1000, C=6.0)
     final_model.fit(X, y)
 
->>>>>>> a764c28c979b814c4b7352d340e6b542dcb709c4
     models = {"model": final_model, "vectorizer": vectorizer}
-    joblib.dump(models, PATH_TO_MODEL)
 
+    # 1. new and old exist. delete old, rename new, and create new
+    # 2. only new exist. rename new, create new
+    if os.path.isfile(PATH_TO_OLD_MODEL):
+        os.remove(PATH_TO_OLD_MODEL)
+
+    os.rename(PATH_TO_MODEL, PATH_TO_OLD_MODEL)
+    joblib.dump(models, PATH_TO_MODEL)
 
 def preprocess_and_predict(text):
     # Load the model
@@ -89,16 +87,16 @@ def preprocess_and_predict(text):
 
     return lr_prediction
 
-def test_model():
+def test_model(use_old_model = False):
     db_conn = get_db_connection()
-    test_df = pd.read_sql_query("SELECT * FROM twitter_sentiment_test", db_conn)
+    test_df = pd.read_sql_query("SELECT * FROM api_sentimententrytest", db_conn)
     test_df = test_df.dropna()
     test_df = test_df[['sentiment', 'text']]
     test_df['ProcessedTweet'] = test_df['text'].apply(preprocess_text)
 
     # Load the model and vectorizer
     try:
-        models = joblib.load(PATH_TO_MODEL)
+        models = joblib.load(PATH_TO_OLD_MODEL if use_old_model else PATH_TO_MODEL)
     except FileNotFoundError:
         return "Error: Model not found"
 
@@ -115,7 +113,6 @@ def test_model():
     # Calculate and return accuracy
     accuracy = accuracy_score(y_test, predictions_test)
     return accuracy
-<<<<<<< HEAD
 
 def predict_proba(texts):
      # Load the model and vectorizer
@@ -133,5 +130,3 @@ def predict_proba(texts):
     probabilities = model.predict_proba(vectorized_texts)
     
     return probabilities
-=======
->>>>>>> a764c28c979b814c4b7352d340e6b542dcb709c4
