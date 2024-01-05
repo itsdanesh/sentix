@@ -3,7 +3,6 @@ import joblib
 import json
 import threading
 import pandas as pd
-import pandas as pd
 import traceback
 from lime.lime_text import LimeTextExplainer
 from django.http.response import JsonResponse
@@ -11,10 +10,18 @@ from django.views.decorators.http import require_http_methods
 from django.core.serializers import serialize
 from django.http import HttpResponse
 from .models import UserReport, SentimentEntry
-from .sentiment.model import PATH_TO_MODEL, PATH_TO_OLD_MODEL, preprocess_and_predict, train_model as train_model_logic, test_model, predict_proba
+from .sentiment.model import (
+    PATH_TO_MODEL,
+    PATH_TO_OLD_MODEL,
+    preprocess_and_predict,
+    train_model as train_model_logic,
+    test_model,
+    predict_proba,
+)
 from django.forms.models import model_to_dict
 
 model_status = "good"
+
 
 # Retrieves the status of the model, which is stored in memory.
 # The possible statuses are:
@@ -36,11 +43,11 @@ def train(request):
         body = json.loads(request.body)
         if not body.get("force", False):
             return JsonResponse({"error": "Model is already being trained"}, status=400)
-        
+
     model_status = "train"
     training_thread = threading.Thread(target=thread_safe_train_model)
     training_thread.start()
-    
+
     return JsonResponse({"message": "Model training initiated"}, status=202)
 
 
@@ -70,16 +77,23 @@ def get_sentiment(request):
 def manipulate_data(request):
     global model_status
 
-    if(request.method == "POST"):
+    if request.method == "POST":
         body = json.loads(request.body)
         text = body.get("text")
-        if(text is None):
-            return JsonResponse({ "error": "Expected property 'text' in request body."}, status=400)
-        
+        if text is None:
+            return JsonResponse(
+                {"error": "Expected property 'text' in request body."}, status=400
+            )
+
         sentiment = body.get("sentiment")
         print(sentiment)
         if not sentiment in ["Neutral", "Positive", "Negative", "Irrelevant"]:
-            return JsonResponse({ "error": "Expected property 'sentiment' in request body to be one of 'Neutral', 'Positive', 'Negative', or 'Irrelevant'"}, status=400)
+            return JsonResponse(
+                {
+                    "error": "Expected property 'sentiment' in request body to be one of 'Neutral', 'Positive', 'Negative', or 'Irrelevant'"
+                },
+                status=400,
+            )
 
         created = SentimentEntry.objects.create(text=text, sentiment=sentiment)
         created.save()
@@ -87,36 +101,44 @@ def manipulate_data(request):
 
         return JsonResponse(model_to_dict(created), safe=False)
 
-    if(request.method == "DELETE"):
+    if request.method == "DELETE":
         body = json.loads(request.body)
 
         text = body.get("text")
-        if(text is None):
-            return JsonResponse({ "error": "Expected property 'text' in request body."})
-        
+        if text is None:
+            return JsonResponse({"error": "Expected property 'text' in request body."})
+
         sentiment = body.get("sentiment")
         if not sentiment in ["Neutral", "Positive", "Negative", "Irrelevant"]:
-            return JsonResponse({ "error": "Expected property 'sentiment' in request body to be one of 'Neutral', 'Positive', 'Negative', or 'Irrelevant'"})
+            return JsonResponse(
+                {
+                    "error": "Expected property 'sentiment' in request body to be one of 'Neutral', 'Positive', 'Negative', or 'Irrelevant'"
+                }
+            )
 
         output = SentimentEntry.objects.filter(text=text, sentiment=sentiment).delete()
 
         if output[0] == 0:
             return JsonResponse({}, status=404)
-        
+
         model_status = "stale"
 
-        return JsonResponse({ "message": "Data successfully deleted." }, status=200)
+        return JsonResponse({"message": "Data successfully deleted."}, status=200)
 
-
-    if(request.method == "GET"):
+    if request.method == "GET":
         print(request.GET)
         matcher = request.GET.get("text")
-        if(matcher is None):
-            return JsonResponse({ "error": "Expected query parameter 'text' for matching data." }, status=400)
+        if matcher is None:
+            return JsonResponse(
+                {"error": "Expected query parameter 'text' for matching data."},
+                status=400,
+            )
 
-
-        matching_entries = list(SentimentEntry.objects.filter(text__contains=matcher).values())
+        matching_entries = list(
+            SentimentEntry.objects.filter(text__contains=matcher).values()
+        )
         return JsonResponse(matching_entries, safe=False)
+
 
 # Reverts the model back to its old version by switching the two model binaries around.
 # While this is happening, the model's status is 'train'.
@@ -132,7 +154,8 @@ def switch_models(request):
     os.rename(intermediate_name, PATH_TO_OLD_MODEL)
 
     model_status = "good"
-    return JsonResponse({ "message": "Model successfully reverted." })
+    return JsonResponse({"message": "Model successfully reverted."})
+
 
 # Computes the accuracy of the old and new models (0-1) and returns them.
 @require_http_methods(["GET"])
@@ -153,9 +176,14 @@ def handle_user_reports(request):
     global model_status
     # Handle get all case
     if request.method == "GET":
+
         def user_report_mapper(report_entry):
-            return { "id": report_entry["pk"], "text": report_entry["fields"]["text"], "sentiment": report_entry["fields"]["sentiment"] }
-        
+            return {
+                "id": report_entry["pk"],
+                "text": report_entry["fields"]["text"],
+                "sentiment": report_entry["fields"]["sentiment"],
+            }
+
         user_reports = serialize("python", UserReport.objects.all())
         user_reports = list(map(user_report_mapper, user_reports))
 
@@ -169,13 +197,14 @@ def handle_user_reports(request):
 
         # Handle the approval and denial of user reports
         if request.method == "PUT":
-            
             if text is None:
-                return JsonResponse({ "error": '"text" is required.' }, status=400)
+                return JsonResponse({"error": '"text" is required.'}, status=400)
             if accept is None:
-                return JsonResponse({ "error": '"accept" is required.' }, status=400)
+                return JsonResponse({"error": '"accept" is required.'}, status=400)
             if sentiment is None and accept:
-                return JsonResponse({ "message": '"sentiment" is required when "accept" is "true".' })
+                return JsonResponse(
+                    {"message": '"sentiment" is required when "accept" is "true".'}
+                )
 
             report = UserReport.objects.get(text=text)
 
@@ -183,7 +212,7 @@ def handle_user_reports(request):
             if accept:
                 existing_report = SentimentEntry.objects.all().filter(text=text).first()
                 model_status = "stale"
-                
+
                 if existing_report is None:
                     SentimentEntry.objects.create(text=text, sentiment=sentiment).save()
                 else:
@@ -192,26 +221,37 @@ def handle_user_reports(request):
 
             report.delete()
 
-            return JsonResponse({ "message": f'Report "{text}" {"accepted" if accept else "denied"}.'})
-        
+            return JsonResponse(
+                {"message": f'Report "{text}" {"accepted" if accept else "denied"}.'}
+            )
+
         if request.method == "POST":
             if text is None:
-                return JsonResponse({ "error": '"text" is required.' }, status=400)
-            
+                return JsonResponse({"error": '"text" is required.'}, status=400)
+
             if sentiment is None:
-                return JsonResponse({ "error": '"sentiment" is required' }, status=400)
+                return JsonResponse({"error": '"sentiment" is required'}, status=400)
 
             if len(list(UserReport.objects.filter(text=text))) == 1:
-                return JsonResponse({ "error": f'Unable to create "{text}" as it already exists.' }, status=400)
+                return JsonResponse(
+                    {"error": f'Unable to create "{text}" as it already exists.'},
+                    status=400,
+                )
 
             UserReport.objects.create(text=text, sentiment=sentiment).save()
 
-            return JsonResponse({ "message": f'Report created for "{text}".' })
+            return JsonResponse({"message": f'Report created for "{text}".'})
 
     except json.JSONDecodeError:
-        return JsonResponse({ "error": "Invalid JSON." }, status=400)
+        return JsonResponse({"error": "Invalid JSON."}, status=400)
     except UserReport.DoesNotExist:
-        return JsonResponse({ "error": f'Unable to modify "{text}" as it has not been registered as a report.'}, status=404)
+        return JsonResponse(
+            {
+                "error": f'Unable to modify "{text}" as it has not been registered as a report.'
+            },
+            status=404,
+        )
+
 
 # Uses LIME's Explainable AI API to explain the impact of words on each possible sentiment.
 # The response contains an HTML document representing the report
@@ -221,7 +261,7 @@ def explain_text(request):
         models = joblib.load(PATH_TO_MODEL)
         model = models["model"]
         request_data = json.loads(request.body)
-        text_instance = request_data['text']
+        text_instance = request_data["text"]
 
         # classes are the sentiments
         class_names = model.classes_.tolist()
@@ -237,7 +277,7 @@ def explain_text(request):
 
     except Exception as e:
         traceback.print_exc()
-        return HttpResponse('Error occurred: ' + str(e), status=500)
+        return HttpResponse("Error occurred: " + str(e), status=500)
 
 
 def thread_safe_train_model():
