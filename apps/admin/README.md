@@ -2,12 +2,6 @@
 
 This project contains the source code of the Admin interface for Sentix.
 
-## Features
-
-The Admin UI exposes 2 paths/pages:
-- `/login` where unauthenticated users are automatically redirected and prompted to login;
-- `/` which contains the admin dashboard, where admins can respond to user feedback (if wrong sentiment calculations are reported), add data points and re-train the model.
-
 ## Development
 
 During development, a React Vite development server is started on port 3000 (`yarn dev:react`) and a TailwindCSS server is started (`yarn dev:css`).

@@ -1,9 +1,9 @@
 import { cn } from "@/utils/cn";
 import { DetailedHTMLProps, InputHTMLAttributes, forwardRef } from "react";
 
-export type InputProps = DetailedHTMLProps<
-	InputHTMLAttributes<HTMLInputElement>,
-	HTMLInputElement
+export type InputProps = Omit<
+	DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
+	"ref"
 >;
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(

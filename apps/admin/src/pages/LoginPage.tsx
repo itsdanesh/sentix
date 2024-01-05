@@ -40,6 +40,7 @@ export const LoginPage: React.FC = () => {
 					onChange={handleChangeUsername}
 				/>
 				<Input
+					type="password"
 					placeholder="Password"
 					value={password}
 					onChange={handleChangePassword}

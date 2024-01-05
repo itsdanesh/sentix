@@ -38,15 +38,15 @@ Content-Type: application/json
 }
 
 ### Get data points that include the selected text
-GET {{HOST_NAME}}/{{DATA_PATH}}?text=Fortnite
+GET {{HOST_NAME}}/{{DATA_PATH}}?text=statement+of+fac a42
 
 ### Add data point
 POST {{HOST_NAME}}/{{DATA_PATH}}
 Content-Type: application/json
 
 {
-  "text": "Life is good",
-  "sentiment": "Positive"
+  "text": "Life is very very good I love it so much",
+  "sentiment": "Negative"
 }
 
 ### Delete a data point
@@ -54,6 +54,6 @@ DELETE {{HOST_NAME}}/{{DATA_PATH}}
 Content-Type: application/json
 
 {
-  "text": "@ITalkFortnite Just bought Borderlands 3 from @EpicGames using your creator code! Can\u2019t wait to use the skin!",
-  "sentiment": "Positive"
+  "text": "Life is good - is a false statement",
+  "sentiment": "Negative"
 }
