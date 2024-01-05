@@ -16,12 +16,14 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-# Application definition
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "0.0.0.0",
+    "localhost",
+    "twitter.com",
+]
 
 INSTALLED_APPS = [
     "corsheaders",
@@ -41,9 +43,9 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
 ]
 
-
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://localhost:5000",
     "https://twitter.com",
 ]
 
@@ -95,22 +97,3 @@ DATABASES = {
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-
-# from django import http
-
-
-# class CorsMiddleware(object):
-#     def __init__(self, get_response):
-#         self.get_response = get_response
-
-#     def __call__(self, request):
-#         response = self.get_response(request)
-#         if (request.method == "OPTIONS"  and "HTTP_ACCESS_CONTROL_REQUEST_METHOD" in request.META):
-#             response = http.HttpResponse()
-#             response["Content-Length"] = "0"
-#             response["Access-Control-Max-Age"] = 86400
-#         response["Access-Control-Allow-Origin"] = "*"
-#         response["Access-Control-Allow-Methods"] = "DELETE, GET, OPTIONS, PATCH, POST, PUT"
-#         response["Access-Control-Allow-Headers"] = "accept, accept-encoding, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with"
-#         return response
