@@ -6,17 +6,21 @@ import {
 	useState,
 } from "react";
 
-export const useDropdown = ({
+export const useDropdown = <
+	TOptions extends { label: string; value: string }[],
+>({
 	options,
 	props,
 }: {
-	options: { label: string; value: string }[];
+	options: TOptions;
 	props?: DetailedHTMLProps<
 		SelectHTMLAttributes<HTMLSelectElement>,
 		HTMLSelectElement
 	>;
-}): { value: string; Dropdown: JSX.Element } => {
-	const [value, setValue] = useState(props?.defaultValue ?? "");
+}): { value: TOptions[number]["value"]; Dropdown: JSX.Element } => {
+	const [value, setValue] = useState<string>(
+		(props?.defaultValue as string) ?? "",
+	);
 
 	const handleChangeValue: ChangeEventHandler<HTMLSelectElement> = (e) => {
 		setValue(e.currentTarget.value);

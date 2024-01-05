@@ -98,7 +98,7 @@ def test_model(use_old_model = False):
     try:
         models = joblib.load(PATH_TO_OLD_MODEL if use_old_model else PATH_TO_MODEL)
     except FileNotFoundError:
-        return "Error: Model not found"
+        return 0
 
     vectorizer = models["vectorizer"]
     model = models["model"]

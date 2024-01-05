@@ -1,13 +1,60 @@
-body {
-    --SentixPositive: #77B91E;
-    --SentixNegative: #E03131;
-    --SentixNeutral: #777777;
-    --SentixIrrelevant: #AE27FF;
-}
+:root {
+    --sentix-Negative: 255, 0, 0;
+    --sentix-Positive: 0, 255, 0;
+    --sentix-Neutral: 200, 200, 200;
+    --sentix-Irrelevant: 200, 200, 200;
+    --sentix-border-opacity: 0.5;
+    --sentix-bg-opacity: 0.10;
+  }
 
-.assigned-label-negative, a.assigned-label-negative { color: var(--SentixNegative) !important; }
-.assigned-label-positive, a.assigned-label-positive { color: var(--SentixPositive) !important; }
-.assigned-label-neutral, a.assigned-label-neutral { color: var(--SentixNeutral) !important; }
-.assigned-label-irrelevant, a.assigned-label-irrelevant { color: var(--SentixIrrelevant) !important; }
+  .container-Negative {
+    border: 1px solid rgba(var(--sentix-Negative), var(--sentix-border-opacity));
+    background-color: rgba(var(--sentix-Negative), var(--sentix-bg-opacity));
+  }
 
-.has-assigned-label * { color: inherit !important; }
+  .container-Positive {
+    border: 1px solid rgba(var(--sentix-Positive), var(--sentix-border-opacity));
+    background-color: rgba(var(--sentix-Positive), var(--sentix-bg-opacity));
+  }
+
+  .container-Neutral {
+    border: 1px solid rgba(var(--sentix-Neutral), var(--sentix-border-opacity));
+    background-color: rgba(var(--sentix-Neutral), var(--sentix-bg-opacity));
+  }
+
+  .container-Irrelevant {
+    border: 1px solid rgba(var(--sentix-Irrelevant), var(--sentix-border-opacity));
+    background-color: rgba(var(--sentix-Irrelevant), var(--sentix-bg-opacity));
+  }
+  
+  .container {
+    border-width: 1px;
+    border-style: solid;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+  }
+
+  .report-btn {
+    border-radius: 5px;
+    padding: 0.25rem 0.75rem;
+    margin-left: 1rem;
+    background-color: hsl(0, 81%, 50%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    transition: 150ms background-color;
+  }
+
+  .report-btn:hover {
+    background-color: hsl(0, 81%, 35%);
+  }
+
+  .report-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }

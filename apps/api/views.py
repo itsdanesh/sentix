@@ -10,7 +10,7 @@ from django.http.response import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.core.serializers import serialize
 from django.http import HttpResponse
-from .models import SentimentEntryTest, UserReport, SentimentEntry
+from .models import UserReport, SentimentEntry
 from .sentiment.model import PATH_TO_MODEL, PATH_TO_OLD_MODEL, preprocess_and_predict, train_model as train_model_logic, test_model, predict_proba
 from django.forms.models import model_to_dict
 
@@ -48,6 +48,7 @@ def train(request):
 # Possible sentiment values are 'Positive', 'Negative', 'Neutral', 'Irrelevant'
 @require_http_methods(["POST"])
 def get_sentiment(request):
+    print(request)
     try:
         analyzable_text = json.loads(request.body).get("text", "")
     except json.JSONDecodeError:
@@ -71,20 +72,20 @@ def manipulate_data(request):
 
     if(request.method == "POST"):
         body = json.loads(request.body)
-
         text = body.get("text")
         if(text is None):
-            return JsonResponse({ "error": "Expected property 'text' in request body."})
+            return JsonResponse({ "error": "Expected property 'text' in request body."}, status=400)
         
         sentiment = body.get("sentiment")
+        print(sentiment)
         if not sentiment in ["Neutral", "Positive", "Negative", "Irrelevant"]:
-            return JsonResponse({ "error": "Expected property 'sentiment' in request body to be one of 'Neutral', 'Positive', 'Negative', or 'Irrelevant'"})
+            return JsonResponse({ "error": "Expected property 'sentiment' in request body to be one of 'Neutral', 'Positive', 'Negative', or 'Irrelevant'"}, status=400)
 
         created = SentimentEntry.objects.create(text=text, sentiment=sentiment)
         created.save()
         model_status = "stale"
 
-        return JsonResponse(created)
+        return JsonResponse(model_to_dict(created), safe=False)
 
     if(request.method == "DELETE"):
         body = json.loads(request.body)
@@ -108,6 +109,7 @@ def manipulate_data(request):
 
 
     if(request.method == "GET"):
+        print(request.GET)
         matcher = request.GET.get("text")
         if(matcher is None):
             return JsonResponse({ "error": "Expected query parameter 'text' for matching data." }, status=400)
@@ -138,12 +140,6 @@ def get_accuracy_score(request):
     # Call the test_model function
     old_model_accuracy = test_model(True)
     new_model_accuracy = test_model(False)
-
-    # Check if the function returned an error message (in case the model wasn't found)
-    if isinstance(old_model_accuracy, str):
-        return JsonResponse({'error': old_model_accuracy}, status=500)
-    if isinstance(new_model_accuracy, str):
-        return JsonResponse({'error': new_model_accuracy}, status=500)
 
     # Return the accuracy in the response
     return JsonResponse(list([old_model_accuracy, new_model_accuracy]), safe=False)
